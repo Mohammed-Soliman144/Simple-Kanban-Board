@@ -1,0 +1,83 @@
+@layer tokens;
+@import "./tokens.css" layer(tokens);
+
+.container {
+  padding-inline: var(--padding-sm);
+  margin-inline: auto;
+  width: 100%;
+}
+
+/* 40rem = 640px */
+@media (min-width: 40rem) {
+  .container {
+    padding-inline: var(--padding-sm);
+    max-width: calc(40rem - 2 * var(--padding-sm));
+  }
+}
+
+/* 64rem = 1024px */
+@media (min-width: 64rem) {
+  .container {
+    padding-inline: var(--padding-md);
+    max-width: calc(64rem - 2 * var(--padding-md));
+  }
+}
+
+/* 80rem = 1280px */
+@media (min-width: 80rem) {
+  .container {
+    padding-inline: var(--padding-lg);
+    max-width: calc(80rem - 2 * var(--padding-lg));
+  }
+}
+
+/* 96rem = 1536px */
+@media (min-width: 96rem) {
+  .container {
+    padding-inline: var(--padding-xl);
+    max-width: calc(96rem - 2 * var(--padding-xl));
+  }
+}
+
+.button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-transform: capitalize;
+  border-radius: var(--radius-capsule);
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.4s ease;
+  padding: var(--padding-xs);
+}
+
+.button:hover {
+  background-color: color-mix(in srgb, var(--color-primary) 60%, transparent);
+}
+
+.button:active {
+  background-color: color-mix(in srgb, var(--color-primary) 80%, transparent);
+}
+
+.button:focus {
+  border: 2px solid var(--color-white);
+}
+
+.button:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border-width: 0;
+}

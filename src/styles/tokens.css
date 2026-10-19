@@ -1,0 +1,80 @@
+/* Tokens */
+:root {
+  /* Colors */
+  --color-heavy-blue: #0081a7;
+  --color-light-blue: #00afb9;
+  --color-deep-blue: #1b263b;
+  --color-heavy-dark: #252422;
+  --color-light-dark: #252422;
+  --color-danger: #e63946;
+  --color-info: #4f772d;
+  --color-light-gray: #adb5bd;
+  --color-semi-gray: #6c757d;
+  --color-bold-gray: #33415c;
+  --color-heavy-gray: #343a40;
+  --color-primary: #0466c8;
+  --color-secondary: #f4a261;
+  --color-foreground-text: #003566;
+  --color-white: #f8f8f8;
+
+  /* FONT SIZE */
+  --font-xs: 0.25rem;
+  --font-sm: 0.5rem;
+  --font-normal: 0.75rem;
+  --font-base: 1rem;
+  --font-md: 1.25rem;
+  --font-semi-lg: 1.5rem;
+  --font-lg: 1.75rem;
+  --font-xl: 2rem;
+  --font-2xl: 3rem;
+  --font-3xl: 4rem;
+  --font-4xl: 5rem;
+  --font-5xl: 6rem;
+
+  /* FONT WEIGHT */
+  --font-light: 500;
+  --font-semi-bold: 600;
+  --font-bold: 700;
+  --font-bolder: 800;
+  --font-black: 900;
+
+  /* FONT FAMILY */
+  --font-head: "Times New Roman", Times, serif;
+  --font-text: sans-serif;
+
+  /* SPACING */
+  --space-xs: 0.25rem;
+  --space-sm: 0.5rem;
+  --space-md: 0.75rem;
+  --space-lg: 1rem;
+  --space-xl: 1.5rem;
+  --space-2xl: 2rem;
+  --space-3xl: 3rem;
+  --space-4xl: 4rem;
+  --space-5xl: 5rem;
+  --space-6xl: 6rem;
+
+  /* Padding */
+  --padding-xs: 0.5rem;
+  --padding-sm: 1rem;
+  --padding-md: 1.25rem;
+  --padding-lg: 2.5rem;
+  --padding-xl: 3.5rem;
+
+  /* Radius */
+  --radius-capsule: 99999px;
+  --radius-pill: 50%;
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+
+  /* BOX SHADOW */
+  --shadow-sm: 0 3px 10px rgb(0 0 0 0.1);
+  --shadow-md: 0 4px 8px rgb(0 0 0 0.3);
+  --shadow-lg: 0 8px 12px rgb(0 0 0 0.3);
+  --shadow-xl: 0 12px 24px rgb(0 0 0 0.5);
+  --shadow-2xl: 0 24px 48px rgb(0 0 0 0.7);
+}
