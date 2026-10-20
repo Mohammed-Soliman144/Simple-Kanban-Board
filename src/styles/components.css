@@ -131,7 +131,7 @@
 .toast__title {
   font-size: clamp(var(--font-sm), var(--font-base), var(--font-md));
 }
-.model__controls__button {
+.toast__controls__button {
   background-color: color-mix(
     in srgb,
     var(--color-foreground-text),
@@ -141,17 +141,18 @@
   position: absolute;
   top: 4px;
   right: 4px;
+  z-index: 100;
 }
 
-.model__controls__button:hover {
+.toast__controls__button:hover {
   background-color: color-mix(
     in srgb,
     var(--color-foreground-text) 80%,
     var(--color-heavy-dark)
   );
 }
-.model__controls__button:active,
-.model__controls__button:focus {
+.toast__controls__button:active,
+.toast__controls__button:focus {
   background-color: color-mix(
     in srgb,
     var(--color-foreground-text) 80%,
@@ -166,6 +167,8 @@
   z-index: 99;
   width: 100%;
   min-height: 100vh;
+  /* user agent stylesheet set default style for dialog less than 100% for width so must override this property */
+  max-width: 100%;
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -182,6 +185,21 @@
   -webkit-backdrop-filter: blur(4px) opacity(0.5);
   backdrop-filter: blur(4px) opacity(0.5);
   filter: opacity(0.9);
+  animation: fade-in 1s both ease;
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0%;
+  }
+  100% {
+    opacity: 100%;
+  }
+}
+
+/* to prevent show scrollbar when open dialog must set overflow on body or html (root) */
+html:has(dialog[open]) {
+  overflow: hidden;
 }
 
 .modal__heading {
@@ -278,6 +296,11 @@
 }
 
 .model__controls__button.close-btn {
+  border-radius: var(--radius-sm);
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  z-index: 100;
   background-color: color-mix(
     in srgb,
     var(--color-heavy-dark) 100%,
