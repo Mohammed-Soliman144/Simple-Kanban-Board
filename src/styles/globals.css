@@ -69,7 +69,7 @@
   }
 }
 
-/* TO DO Section */
+/* Task Section */
 .task-col-sec {
   flex: 1;
   width: 100%;
@@ -84,6 +84,7 @@
   position: relative;
 }
 
+/* Task heading h2 */
 .task-col-sec__heading {
   color: color-mix(
     in srgb,
@@ -103,6 +104,7 @@
   }
 }
 
+/* Task list ul */
 .task-col-sec__list {
   flex: 1;
   width: 100%;
@@ -115,13 +117,14 @@
   padding-block: var(--padding-md);
 }
 
+/* Task list-item li */
 .list__list-item {
   flex: 1;
   width: 100%;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding-inline: var(--padding-xs);
+  align-items: flex-start;
+  padding: var(--padding-xs);
   background-color: color-mix(
     in srgb,
     var(--color-light-dark) 25%,
@@ -132,12 +135,14 @@
   min-height: 110px;
 }
 
+/* task text ul>li>span */
 .list-item__text {
   flex: 1;
   width: 100%;
   font-size: clamp(var(--font-base), var(--font-base), var(--font-md));
 }
 
+/* task controls ul>li>div.list-item__controls */
 .list-item__controls {
   display: flex;
   justify-content: center;
@@ -146,23 +151,45 @@
   font-size: clamp(var(--font-sm), var(--font-base), var(--font-normal));
 }
 
-/*  { */
+/* task buttons ul>li>div.list-item__controls>button.list-item__button */
 .list-item__button {
   position: absolute;
-  top: 80%;
+  top: 90%;
   right: 5px;
-  transform: translateY(-75%);
+  transform: translateY(-90%);
   width: 35px;
   z-index: 1;
   border-radius: var(--radius-sm);
   padding: var(--padding-xs);
   background-color: color-mix(in srgb, var(--color-heavy-dark), transparent);
+  transition:
+    background-color 0.4s,
+    border 0.4s;
 }
 
+.list-item__button:hover {
+  background-color: color-mix(
+    in srgb,
+    var(--color-heavy-dark) 120%,
+    transparent
+  );
+}
+
+.list-item__button:active {
+  background-color: color-mix(
+    in srgb,
+    var(--color-heavy-dark) 150%,
+    transparent
+  );
+  border: 1px solid currentColor;
+}
+
+/* task update button ul>li>div.list-item__controls>button.list-item__button.update-btn */
 .list-item__button.update-btn {
   right: 45px;
 }
 
+/* To DO Task Section controls section.task-col-sec__list.to-do-sec>div.list__controls */
 .list__controls {
   display: flex;
   justify-content: center;
@@ -173,7 +200,9 @@
   right: 5%;
 }
 
+/* To Do Task Section button section.task-col-sec__list.to-do-sec>div.list__controls>button  */
 .controls__button--primary {
   width: 38px;
   border-radius: var(--radius-sm);
 }
+/* ====================================================================================== */

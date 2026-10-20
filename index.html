@@ -287,8 +287,8 @@
                   <path d="m5.082 11.09 8.828 8.828" />
                 </svg>
               </button>
-            </div>  
-        </section>
+            </div>
+          </section>
           <!-- ===================== in-progress-task section =============================== -->
           <section class="main__task-col-sec in-progress-tasks task-col-sec">
             <h2 class="task-col-sec__heading heading">in progress</h2>
@@ -693,6 +693,103 @@
           </section>
         </div>
       </div>
+      <!-- =====================  Add New Task Template =============================== -->
+      <template class="add-template" id="add-template">
+        <dialog class="add-template__modal">
+          <h2 class="modal__heading heading">new task - to do list</h2>
+          <form action="/submit" method="dialog" class="modal__add-form">
+            <div class="add-form__input">
+              <label for="add-item" class="add-form__label">task title: </label>
+              <textarea
+                name="task"
+                id="add-item"
+                class="add-form__textarea"
+              ></textarea>
+            </div>
+            <div class="add-form__controls">
+              <button
+                type="submit"
+                class="add-form__button button btn-save"
+                aria-label="Save new task"
+              >
+                save
+              </button>
+              <button
+                type="button"
+                class="add-form__button button btn-cancel"
+                aria-label="Cancel"
+              >
+                cancel
+              </button>
+            </div>
+          </form>
+          <div class="model__controls">
+            <button
+              type="button"
+              class="model__controls__button button close-btn"
+              aria-label="Close modal"
+            >
+              <span class="sr-only">close</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="button__close-icon icon"
+                aria-hidden="true"
+                focusable="false"
+                role="img"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </button>
+          </div>
+        </dialog>
+      </template>
+      <!-- =====================  Info Message Template =============================== -->
+      <template class="msg-template" id="msg-template">
+        <div
+          class="msg-template__toast"
+          role="status"
+          aria-live="polite"
+          aria-labelledby="toast-title"
+        >
+          <div class="toast__container">
+            <p class="toast__title" id="toast-title"></p>
+            <button
+              type="button"
+              class="model__controls__button button close-btn"
+              aria-label="Close modal"
+            >
+              <span class="sr-only">close</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="button__close-icon icon"
+                aria-hidden="true"
+                focusable="false"
+                role="img"
+              >
+                <path d="M18 6 6 18" />
+                <path d="m6 6 12 12" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </template>
     </main>
   </body>
 </html>
