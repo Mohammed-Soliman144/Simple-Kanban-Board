@@ -43,9 +43,10 @@ export function saveModal(btnSelector = "", taskSelector = "") {
     saveBtn.addEventListener("click", updateLocalStorage({taskTitle, taskDate}))
 }
 
-export function removeModal(modalSelector = "") {
+export function closeModal(modalSelector = "") {
     if(!modalSelector) return
     const modal = document.querySelector(modalSelector)
+    console.log(modal)
     modal.close()
     modal.remove()
 }

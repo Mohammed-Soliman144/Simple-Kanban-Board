@@ -161,7 +161,7 @@
 }
 
 /* Dialog */
-.add-template__modal {
+.add-template__modal[open] {
   position: absolute;
   inset: 0;
   z-index: 99;
@@ -186,6 +186,10 @@
   backdrop-filter: blur(4px) opacity(0.5);
   filter: opacity(0.9);
   animation: fade-in 1s both ease;
+}
+
+.add-template__modal:not([open]) {
+  display: none;
 }
 
 @keyframes fade-in {
