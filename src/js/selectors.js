@@ -6,6 +6,9 @@ const inProgressListItems = document.querySelectorAll("section.main__task-col-se
 const doneListItems = document.querySelectorAll("section.main__task-col-sec>ul.task-col-sec__list.done-list>li")
 const todoListItemEditBtns = document.querySelectorAll("section.main__task-col-sec>ul.task-col-sec__list.to-do-list>li>div.list-item__controls>button.update-btn")
 const todoListItemDeleteBtns = document.querySelectorAll("section.main__task-col-sec>ul.task-col-sec__list.to-do-list>li>div.list-item__controls>button.delete-btn")
+const inProgressListItemDeleteBtns = document.querySelectorAll("section.main__task-col-sec>ul.task-col-sec__list.in-progress-list>li>div.list-item__controls>button.delete-btn")
+const doneListItemDeleteBtns = document.querySelectorAll("section.main__task-col-sec>ul.task-col-sec__list.done-list>li>div.list-item__controls>button.delete-btn")
+
 const addTemplate = document.getElementById("add-template")
 // const taskDialog = document.querySelector("dialog.add-template__modal>form.modal__add-form>textarea.add-form__textarea")
 // const saveBtn = document.querySelector("dialog.add-template__modal>form.modal__add-form>button.btn-save")
@@ -18,4 +21,4 @@ const closeToastBtn = document.querySelector("div.msg-template__toast>button.clo
 const main = document.querySelector("main.main")
 
 
-export {addBtn, clearBtn, todoListItems, inProgressListItems, doneListItems, todoListItemDeleteBtns, todoListItemEditBtns, addTemplate, cancelBtn, closeBtn, msgTemplate, toast, toastTitle, closeToastBtn, main}
+export {addBtn, clearBtn, todoListItems, inProgressListItems, doneListItems, todoListItemDeleteBtns, todoListItemEditBtns, addTemplate, cancelBtn, closeBtn, msgTemplate, toast, toastTitle, closeToastBtn, main, inProgressListItemDeleteBtns, doneListItemDeleteBtns}

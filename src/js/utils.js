@@ -22,6 +22,17 @@ export function updateLocalStorage(task = {}) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify({tasks: [task]}))
 }
 
+export function deleteItemLocalStorage(itemTitle) {
+    if(typeof window === "undefined" || !itemTitle) return
+    const item = JSON.parse(localStorage.getItem(STORAGE_KEY))
+    const {tasks} = item
+    if(!tasks.length) return
+    console.log(tasks)
+    const newItems = tasks.filter(task => task.title !== itemTitle? task : null)
+    console.log(newItems, tasks)
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({tasks: newItems}))
+}
+
 export function openModal(modalSelector = "") {
     if(!modalSelector) return
     const modal = document.querySelector(modalSelector)
@@ -46,7 +57,6 @@ export function saveModal(btnSelector = "", taskSelector = "") {
 export function closeModal(modalSelector = "") {
     if(!modalSelector) return
     const modal = document.querySelector(modalSelector)
-    console.log(modal)
     modal.close()
     modal.remove()
 }
