@@ -54,25 +54,32 @@
 
 /* tasks-multi-cols Container */
 .main__tasks-multi-cols {
-  display: flex;
+  /* display: flex;
   flex-flow: column;
-  justify-content: center;
+  justify-content: stretch;
   align-items: center;
+  gap: var(--space-xl); */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: var(--space-xl);
+  align-items: stretch;
+  align-content: center;
+  justify-content: center;
+  max-width: 100%;
 }
 
 @media (min-width: 64rem) {
   .main__tasks-multi-cols {
-    flex-flow: row;
+    /* flex-flow: row;
     justify-content: space-between;
-    align-items: center;
+    align-items: stretch; */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-rows: auto;
   }
 }
 
 /* Task Section */
 .task-col-sec {
-  flex: 1;
-  width: 100%;
   display: flex;
   flex-flow: column;
   align-items: center;
@@ -106,7 +113,6 @@
 
 /* Task list ul */
 .task-col-sec__list {
-  flex: 1;
   width: 100%;
   display: flex;
   flex-flow: column;
@@ -115,16 +121,16 @@
   gap: var(--space-md);
   padding-left: 0;
   padding-block: var(--padding-md);
+  max-width: 100%;
 }
 
 /* Task list-item li */
 .list__list-item {
-  flex: 1;
   width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: var(--padding-xs);
+  padding: var(--padding-md) var(--padding-xs);
   background-color: color-mix(
     in srgb,
     var(--color-light-dark) 25%,
@@ -132,7 +138,11 @@
   );
   border-radius: var(--radius-lg);
   position: relative;
-  min-height: 110px;
+  /* min-height: 110px; */
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  max-width: 100%;
 }
 
 /* task text ul>li>span */
