@@ -2,11 +2,6 @@ import { msgTemplate, main, listItemTemplate, todoList } from "./selectors.js";
 
 const STORAGE_KEY = "Task-App";
 
-// export function addNewTask(task) {
-//     const dateAdded = new Date().toISOString() 
-//     updateLocalStorage({task, dateAdded})
-// }
-
 export function restoreLocalStorage() {
     if(typeof window === "undefined") return []
     const {data: tasks} = JSON.parse(localStorage.getItem(STORAGE_KEY))
@@ -41,9 +36,10 @@ export function deleteItemLocalStorage(itemId) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({tasks: newItems}))
 }
 
-export function openModal(modalSelector = "", isEditable = false, itemText = "", id = "") {
-    if(!modalSelector) return
-    const modal = document.querySelector(modalSelector)
+export function openModal(isEditable = false, itemText = "", id = "") {
+    const modal = document.querySelector("dialog.add-template__modal")
+    if(!modal) return
+    window.scroll({top: 0, left: 0, behavior: "smooth"})
     modal.showModal()
     if(isEditable && id) {
         modal.querySelector("textarea").value = itemText
@@ -58,17 +54,9 @@ export function cloneTemplate(template, root) {
     return cloneTemp
 }
 
-// export function saveModal(btnSelector = "", taskSelector = "") {
-//     if(!btnSelector || !taskSelector) return
-//     const saveBtn = document.querySelector(btnSelector)
-//     const taskTitle = document.querySelector(taskSelector)?.textContent
-//     const taskDate = new Date().toISOString()
-//     saveBtn.addEventListener("click", updateLocalStorage({taskTitle, taskDate}))
-// }
-
-export function closeModal(modalSelector = "") {
-    if(!modalSelector) return
-    const modal = document.querySelector(modalSelector)
+export function closeModal() {
+    const modal = document.querySelector("dialog.add-template__modal")
+    if(!modal) return
     modal.close()
     modal.remove()
 }
@@ -76,24 +64,18 @@ export function closeModal(modalSelector = "") {
 export function handleFormSubmittion (e) {
     // to prevent browser from default behavior when submit form
     e.preventDefault()
-
     const form = main.querySelector("dialog.add-template__modal>form.modal__add-form")
     const textarea = form.elements.task.value
     const itemId = form.elements.task.dataset.itemId
-    console.log(itemId)
-
     if(textarea) {
         const newTask = {
             id: itemId ?? new Date().toISOString(),
             title: textarea
         }
-        console.log(newTask.id)
-        console.log(newTask.id === itemId)
         updateLocalStorage(newTask)
         addNewListItem(textarea, newTask.id)
     }
-    const dialogCls = "dialog.add-template__modal"
-    closeModal(dialogCls)
+    closeModal()
 }
 
 export function addNewListItem(task = "", id = "") {
@@ -111,7 +93,7 @@ export function addNewListItem(task = "", id = "") {
     }
     cloneTemplate(listItemTemplate, todoList)
     const newSpan = todoList.querySelector("ul>li:last-child>span")
-    newSpan.id = id
+    newSpan.closest("li").id = id
     newSpan.textContent = task
 }
 
@@ -127,6 +109,7 @@ export function clearListItems() {
 
 export function showToast(msg = "", msgType = "INFO") {
     if(!msg) return
+    console.log("message exist")
     cloneTemplate(msgTemplate, main)
     const toastTitle = main.querySelector("div.msg-template__toast>div.toast__container>p.toast__title")
     toastTitle.textContent = msg
@@ -142,12 +125,16 @@ export function showToast(msg = "", msgType = "INFO") {
     toastTitle.closest("div.msg-template__toast>div.toast__container").classList.add("opened")
 }
 
-export function closeToast(toastSelector = "") {
-    if(!toastSelector) return
+export function closeToast(ms = 0) {
+    const toast = document.querySelector("div.msg-template__toast")
+    if(!toast) return
     // msg-template__toast>toast__container>toast__title
-    const toast = document.querySelector(toastSelector)
     toast.querySelector("div.toast__container").classList.remove("opened")
     toast.querySelector("div.toast__container").classList.add("closed")
+    if(ms) {
+        setTimeout(() => toast.remove(), ms)
+        return
+    }
     toast.remove()
 }
 

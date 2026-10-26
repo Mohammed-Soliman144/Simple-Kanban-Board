@@ -1,58 +1,51 @@
-import { addBtn, clearBtn, addTemplate, msgTemplate, main, listItemTemplate, todoList } from "./selectors.js";
-import { cloneTemplate, openModal, handleFormSubmittion, clearListItems, removeListItem, showToast, closeToast } from "./utils.js";
-
-
-
-// const todoListItems = document.querySelectorAll("section.main__task-col-sec>ul.task-col-sec__list.to-do-list>li")
-// const inProgressListItems = document.querySelectorAll("section.main__task-col-sec>ul.task-col-sec__list.in-progress-list>li")
-// const doneListItems = document.querySelectorAll("section.main__task-col-sec>ul.task-col-sec__list.done-list>li")
-
-
-// const todoListItemEditBtns = document.querySelectorAll("section.main__task-col-sec>ul.task-col-sec__list.to-do-list>li>div.list-item__controls>button.update-btn")
-// const todoListItemDeleteBtns = document.querySelectorAll("section.main__task-col-sec>ul.task-col-sec__list.to-do-list>li>div.list-item__controls>button.delete-btn")
-// const inProgressListItemDeleteBtns = document.querySelectorAll("section.main__task-col-sec>ul.task-col-sec__list.in-progress-list>li>div.list-item__controls>button.delete-btn")
-// const doneListItemDeleteBtns = document.querySelectorAll("section.main__task-col-sec>ul.task-col-sec__list.done-list>li>div.list-item__controls>button.delete-btn")
-
+import { addBtn, clearBtn, addTemplate, main, allLists } from "./selectors.js";
+import { cloneTemplate, openModal, handleFormSubmittion, clearListItems, removeListItem, showToast, closeToast, closeModal } from "./utils.js";
 
 addBtn?.addEventListener("click", () => {
     cloneTemplate(addTemplate, main)
-    const selector = "dialog.add-template__modal"
-    openModal(selector)
+    openModal()
 })
 
 // native click eventName is bubble up by default
 main.addEventListener("click", (e) => {
-    const saveBtn = e.target.matches("dialog.add-template__modal>form.modal__add-form>div.add-form__controls>button.add-form__button.btn-save")
-    const cancelBtn = e.target.matches("dialog.add-template__modal>form.modal__add-form>div.add-form__controls>button.add-form__button.btn-cancel")
-    const closeIconBtn = e.target.matches("dialog.add-template__modal>div.model__controls>button.model__controls__button.close-btn>svg.button__close-icon")
-    const closeBtn = e.target.matches("dialog.add-template__modal>div.model__controls>button.model__controls__button.close-btn>svg.button__close-icon")
-    const deleteBtn = e.target.matches("section.main__task-col-sec>ul.task-col-sec__list>li>div.list-item__controls>button.delete-btn")
-    const deleteIcon = e.target.matches("section.main__task-col-sec>ul.task-col-sec__list>li>div.list-item__controls>button.delete-btn>svg.button__delete-icon.icon")
-    const updateBtn = e.target.matches("section.main__task-col-sec>ul.task-col-sec__list>li>div.list-item__controls>button.update-btn")
-    const updateIcon = e.target.matches("section.main__task-col-sec>ul.task-col-sec__list>li>div.list-item__controls>button.update-btn>svg.button__update-icon.icon")
+    const isSaveBtnClicked = e.target.matches("dialog.add-template__modal>form.modal__add-form>div.add-form__controls>button.add-form__button.btn-save")
+    const isCancelBtnClicked = e.target.matches("dialog.add-template__modal>form.modal__add-form>div.add-form__controls>button.add-form__button.btn-cancel")
+    const isCloseBtnClicked = e.target.matches("dialog.add-template__modal>div.model__controls>button.model__controls__button.close-btn")
+    const isCloseIconClicked = e.target.matches("dialog.add-template__modal>div.model__controls>button.model__controls__button.close-btn>svg.button__close-icon.icon")
+    const isDeleteBtnClicked = e.target.matches("section.main__task-col-sec>ul.task-col-sec__list>li>div.list-item__controls>button.delete-btn")
+    const isDeleteIconClicked = e.target.matches("section.main__task-col-sec>ul.task-col-sec__list>li>div.list-item__controls>button.delete-btn>svg.button__delete-icon.icon")
+    const isUpdateBtnClicked = e.target.matches("section.main__task-col-sec>ul.task-col-sec__list>li>div.list-item__controls>button.update-btn")
+    const isUpdateIconClicked = e.target.matches("section.main__task-col-sec>ul.task-col-sec__list>li>div.list-item__controls>button.update-btn>svg.button__update-icon.icon")
+    const isToastCloseBtnClicked = document.querySelector("div.msg-template__toast button.toast__controls__button.close-btn") 
+
     const alllistItems = main.querySelectorAll("section.main__task-col-sec>ul.task-col-sec__list>li")
-    
+    const saveBtnLabel = main.querySelector("dialog.add-template__modal>form.modal__add-form>div.add-form__controls>button.add-form__button.btn-save")
 
-    if(saveBtn && saveBtn.textContent === "Edit") {
-        handleFormSubmittion(e)
-        return
-    }
 
-    if(saveBtn || cancelBtn || closeBtn || closeIconBtn) {
+    if(isSaveBtnClicked && saveBtnLabel.textContent.trim() === "edit") {
         handleFormSubmittion(e)
-        cloneTemplate(msgTemplate, main)
+    } else if(isSaveBtnClicked && saveBtnLabel.textContent.trim() === "save") {
+        const textarea = main.querySelector("dialog.add-template__modal>form.modal__add-form textarea")
+        if(!textarea.value) {
+            closeModal()
+            return
+        }
+        handleFormSubmittion(e)
         showToast("Add item successfully!", "INFO")
-        const toastCls = "div.msg-template__toast"
-        setTimeout(() => closeToast(toastCls), 1200)
-    } else if (deleteBtn || deleteIcon) {
+        closeToast(1500)
+    } else if (isCancelBtnClicked || isCloseBtnClicked || isCloseIconClicked) {
+        closeModal()
+    }
+    else if (isDeleteBtnClicked || isDeleteIconClicked) {
         removeListItem(e, alllistItems)
-    } else if(updateBtn || updateIcon) {
+    } else if(isUpdateBtnClicked || isUpdateIconClicked) {
         const itemText = e.target.closest("li").querySelector("span").textContent || ""
-        const itemId = e.target.closest("li").querySelector("span").id || ""
+        const itemId = e.target.closest("li").id || ""
         cloneTemplate(addTemplate, main)
-        const selector = "dialog.add-template__modal"
-        openModal(selector, true, itemText, itemId)
-        main.querySelector("dialog.add-template__modal>form.modal__add-form>div.add-form__controls>button.add-form__button.btn-save").textContent = "Edit"
+        openModal(true, itemText, itemId)
+        main.querySelector("dialog.add-template__modal>form.modal__add-form>div.add-form__controls>button.add-form__button.btn-save").textContent = "edit"
+    } else if (isToastCloseBtnClicked) {
+        closeToast()
     }
 })
 
@@ -60,8 +53,146 @@ main.addEventListener("click", (e) => {
 // so must use {capture: true} or true as third parameter when use addEventLisitener()  
 main.addEventListener("close", (e) => {
     if(e.target.matches("dialog.add-template__modal")){
+        const textarea = main.querySelector("dialog.add-template__modal>form.modal__add-form textarea")
+        if(!textarea.value) {
+            closeModal()
+            return
+        }
         handleFormSubmittion(e)
     }
 }, {capture: true})
 
 clearBtn.addEventListener("click", clearListItems)
+
+
+/* handle Drag and drop Web API - always set on element draggable=true to activate */
+// to activate HTML drag and drop api must set on element draggable = true
+// NOTE => drag | dragstart | dragend => all these events associated with listItem or items <li>
+// NOTE => dragenter | dragleave | dragover | drop => all these events associated with lists or section <ul> or <section> (parent of listItem)
+// three scenario of drag and drop api elements
+// 1- drag and drop element within one container (reordering items => must use getElementAfterDragged) to define element after dragged
+// 2- drag and drop element between more than one container (using only dataTransfer.setData("text/plain", draggedElement.id)) then retrieve elementId by dataTransfer.geData("text/plain") then catch element by document.getElementById(elementId) then append to child within drop event container.appendChild(element)
+// 3- thid one handle both above scenarios 
+
+// state to track dragged element with drag and drop operations within events lifecycle
+let draggedItem = null
+
+// 1- setup and attach event listener for dragstart
+main.addEventListener("dragstart", (e) => {
+    const isDraggedStart = e.target.matches("section.main__task-col-sec>ul.task-col-sec__list>li")
+    const draggedItem = e.target.closest("section.main__task-col-sec>ul.task-col-sec__list>li")
+    if(isDraggedStart)
+        draggedItem.addEventListener("dragstart", handleDragStart)
+})
+
+// 2- setup and attach event listener for dragstart
+main.addEventListener("dragend", (e) => {
+    const isDraggedEnd = e.target.matches("section.main__task-col-sec>ul.task-col-sec__list>li")
+    const draggedItem = e.target.closest("section.main__task-col-sec>ul.task-col-sec__list>li")
+    if(isDraggedEnd)
+        draggedItem.addEventListener("dragend", handleDragEnd)
+})
+
+// 3- Setup and attach event listener for events dragenter | dragleave | dragover | drop
+for(const list of allLists){
+    list.addEventListener("dragenter", handleDragEnter)
+    list.addEventListener("dragleave", handleDragLeave)
+    list.addEventListener("dragover", handleDragOver)
+    list.addEventListener("drop", handleDrop)
+}
+
+// define element that should be aftered the draggedElement 
+export function getElementAfterDragged(list, axisY) {
+    // catch all elements or items that not has dragging class to define element after draggedItem or draggedElement within current list (container element)
+    // then convert listItems from NodeList (HTMLElementNodeList) to normal array
+    const listItems = [...list.querySelectorAll("section.main__task-col-sec>ul.task-col-sec__list>li.list__list-item.list-item:not(.dragging)")]
+    return listItems.reduce((closest, item) => {
+        const ItemSizes = item.getBoundingClientRect()
+        const offset = axisY - (ItemSizes.top + ItemSizes.height / 2)
+        if(offset < 0 && offset > closest.offset) 
+            return {
+                offset,
+                element: item
+            }
+        return closest
+    }, {
+        offset: Number.NEGATIVE_INFINITY,
+        element: null
+    }).element
+}
+
+
+// handleDragStart => store data of dragged element
+export function handleDragStart(e) {
+    // update state by item selected to drag that e.target.closest("li") points to it
+    draggedItem = e.target.closest("li.list__list-item.list-item")
+    // specifiy type of drag and drop operation by move dragged element to destination
+    // by using dataTransfer method and initialize effectAllowed property to "move"
+    e.dataTransfer.effectAllowed = "move"
+    // store data of dragged element that matches <li> and type of data is plain text "text/plain"
+    e.dataTransfer.setData("text/plain", draggedItem.id)
+    // add dragging class to all dragged items
+    draggedItem.classList.add("dragging")
+}
+
+// handleDragEnd => update state of draggedItem and remove visual feedback or dragging class
+export function handleDragEnd(e) {
+    // update state by item selected to drag that e.target.closest("li") points to it
+    draggedItem = e.target.closest("li.list__list-item.list-item")
+    if(!draggedItem && draggedItem.classList.contains("dragging"))
+        draggedItem.classList.remove("dragging")
+    // update state of draggedItem to null
+    draggedItem = null
+}
+
+// handleDragOver => prevent default browser behavior which is automated prevent dragged item over another item (item/element) (dragover associated with list or section)
+export function handleDragOver(e) {
+    // prevent default browser behavior
+    e.preventDefault()
+
+    // catch parent list of draggedItem
+    const list = e.target.closest("section.main__task-col-sec")
+    // get element after dragged Item
+    const elementAfterDragged = getElementAfterDragged(list, e.clientY)
+
+    if(!draggedItem || !list) return
+
+    // define if elementAfterDragged is null 
+    if(elementAfterDragged === null) 
+        // so append draggedItem to list as last one
+        list?.appendChild(draggedItem)
+    else 
+        // so insertBefore draggedItem before elementAfterDragged
+        list?.insertBefore(draggedItem, elementAfterDragged)
+}
+
+// handleDragEnter => add visual feedback drag-over class  (dragenter associated with list or section)
+export function handleDragEnter(e) {
+    // select list dragged from it that e.target.closest("section.main__task-col-sec") points to it
+    const list = e.target.closest("section.main__task-col-sec")
+    if(list)
+        list.classList.add("drag-over")
+}
+
+// handleDragLeave => remove visual feedback drag-over class (dragleave associated with list or section)
+export function handleDragLeave(e) {
+    // select list dragged from it that e.target.closest("section.main__task-col-sec") points to it
+    const list = e.target.closest("section.main__task-col-sec")
+    if(list && list.classList.contains("drag-over"))
+        list.classList.remove("drag-over")
+}
+
+// handleDrop => reset drag and drop operations and prevent default browser behavior (dragleave associated with list or section) and retrieve or restore itemDragged by using dataTransfer.getData
+export function handleDrop(e) {
+    // prevent default browser behavior
+    e.preventDefault()
+    // catch list of current draggedItem
+    const list = e.target.closest("section.main__task-col-sec")
+    // retrieve item ID that transfer by drap and drop html api by dataTransfer.getData(dataType) "text/plain"
+    const itemId = e.dataTransfer.getData("text/plain")
+    // if only drag and drop elements between containers so i do not need function getElementAfterDragged
+    // and in this append item by document.getElementById(itemId)
+    const item = document.getElementById(itemId)
+    // then append item to selected or target list  by list.appendChild(item) that already proccessed inside dragover event 
+    console.log(list, item)
+}

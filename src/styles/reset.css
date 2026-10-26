@@ -117,6 +117,10 @@ button {
   border: 0;
 }
 
+button svg {
+  pointer-events: none;
+}
+
 input[type="search"] {
   -webkit-appearance: none;
   appearance: none;

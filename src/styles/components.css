@@ -99,7 +99,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: var(--padding-md) var(--padding-sm);
+  padding-inline: var(--padding-md) var(--padding-bs);
+  padding-block: var(--padding-md);
   border-radius: var(--radius-md);
   background-color: color-mix(
     in srgb,
@@ -132,16 +133,21 @@
   font-size: clamp(var(--font-sm), var(--font-base), var(--font-md));
 }
 .toast__controls__button {
+  padding: var(--padding-tn);
   background-color: color-mix(
     in srgb,
     var(--color-foreground-text),
     var(--color-heavy-dark)
   );
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-xs);
   position: absolute;
-  top: 4px;
-  right: 4px;
+  top: 2px;
+  right: 2px;
   z-index: 100;
+}
+
+.toast__controls__button svg {
+  width: 1em;
 }
 
 .toast__controls__button:hover {

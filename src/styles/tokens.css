@@ -12,7 +12,6 @@
   --color-light-info: #68bfbd;
   --color-light-gray: #adb5bd;
   --color-semi-gray: #6c757d;
-  --color-bold-gray: #33415c;
   --color-heavy-gray: #343a40;
   --color-primary: #0466c8;
   --color-secondary: #f4a261;
@@ -57,9 +56,11 @@
   --space-6xl: 6rem;
 
   /* Padding */
+  --padding-tn: 0.125rem;
   --padding-xs: 0.5rem;
   --padding-sm: 1rem;
   --padding-md: 1.25rem;
+  --padding-bs: 2rem;
   --padding-lg: 2.5rem;
   --padding-xl: 3.5rem;
 
