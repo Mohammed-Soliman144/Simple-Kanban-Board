@@ -95,8 +95,8 @@
 }
 
 .task-col-sec:has(ul.drag-over) {
-  background-color: color-mix(in srgb, var(--color-semi-gray) 85%, transparent);
-  border: 2px dashed var(--color-primary);
+  background-color: color-mix(in srgb, var(--color-semi-gray) 75%, transparent);
+  border: 3px dashed var(--color-primary);
 }
 
 /* Task heading h2 */
@@ -151,11 +151,11 @@
   white-space: normal;
   max-width: 100%;
   cursor: grab;
+  transition: opacity 0.4s ease;
 }
 
-.list__list-item:has(.dragging) {
-  cursor: grabbing;
-  border: 1px solid var(--color-info);
+.list__list-item.dragging {
+  opacity: 0.4;
 }
 
 /* task text ul>li>span */
@@ -177,7 +177,7 @@
 /* task buttons ul>li>div.list-item__controls>button.list-item__button */
 .list-item__button {
   position: absolute;
-  top: 90%;
+  bottom: -26px;
   right: 5px;
   transform: translateY(-90%);
   width: 35px;

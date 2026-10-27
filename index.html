@@ -34,7 +34,10 @@
         <div class="main__tasks-multi-cols">
           <!-- ===================== to-do-task section =============================== -->
           <section class="main__task-col-sec to-do-tasks task-col-sec">
-            <h2 class="task-col-sec__heading heading">to do</h2>
+            <h2 class="task-col-sec__heading heading">
+              to do
+              <span class="task-col-sec__heading__badge to-do-badge"></span>
+            </h2>
             <ul class="task-col-sec__list list to-do-list" id="to-do-list">
               <!-- Empty List Item will add automatically by js -->
             </ul>
@@ -97,15 +100,25 @@
           </section>
           <!-- ===================== in-progress-task section =============================== -->
           <section class="main__task-col-sec in-progress-tasks task-col-sec">
-            <h2 class="task-col-sec__heading heading">in progress</h2>
-            <ul class="task-col-sec__list list in-progress-list">
+            <h2 class="task-col-sec__heading heading">
+              in progress
+              <span
+                class="task-col-sec__heading__badge in-progress-badge"
+              ></span>
+            </h2>
+            <ul
+              class="task-col-sec__list list in-progress-list"
+              id="in-progress-list"
+            >
               <!-- Empty List Item will add automatically by js -->
             </ul>
           </section>
           <!-- ===================== done-task section =============================== -->
           <section class="main__task-col-sec done-task task-col-sec">
-            <h2 class="task-col-sec__heading heading">done</h2>
-            <ul class="task-col-sec__list list done-list">
+            <h2 class="task-col-sec__heading heading">
+              done <span class="task-col-sec__heading__badge done-badge"></span>
+            </h2>
+            <ul class="task-col-sec__list list done-list" id="done-list">
               <!-- Empty List Item will add automatically by js -->
             </ul>
           </section>
