@@ -1,5 +1,5 @@
-import { msgTemplate, main, listItemTemplate, todoList } from "./selectors.js";
-import { kanbanState, TODO, PROG, DONE, updateState, updateCountState, deleteItemState, resetState } from "./state.js";
+import { msgTemplate, main, listItemTemplate, todoList, todolistItems, proglistItems, donelistItems, allLists } from "./selectors.js";
+import { kanbanState, TODO, PROG, DONE, updateState, deleteItemState, resetState, logState } from "./state.js";
 
 // state to track dragged element with drag and drop operations within events lifecycle
 export let draggedItem = null
@@ -15,21 +15,19 @@ export function restoreLocalStorage() {
 export function updateLocalStorage(task = {}) {
     if(!Object.keys(task).length) return
     if(typeof window === "undefined") return
-    const {toDoCount, inProgressCount, doneCount} = kanbanState
     const item = JSON.parse(localStorage.getItem(STORAGE_KEY))
-    if(item) {
-        const { tasks } = item
-        const isExist = tasks.filter(taskItem => taskItem.id === task.id)[0]?.id === task.id ?? false
-        console.log(isExist, task)
-        if(isExist) {
-            const newTasks = tasks.map(taskItem => taskItem.id === task.id? {...taskItem, title: task.title, type: task.type} : taskItem)
-            localStorage.setItem(STORAGE_KEY, JSON.stringify({...item, tasks: [...newTasks], toDoCount, inProgressCount, doneCount}))
-            return
-        }
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({...item, tasks: [...item.tasks, task], toDoCount, inProgressCount, doneCount}))
-    }
-    else
-        localStorage.setItem(STORAGE_KEY, JSON.stringify({tasks: [task], toDoCount, inProgressCount, doneCount}))
+
+    if(!item) 
+        return localStorage.setItem(STORAGE_KEY, JSON.stringify({tasks: [task]}))
+
+    const {tasks} = item
+    const isExist = tasks.filter(taskItem => taskItem.id === task.id).length > 0 ? true : false
+
+    if(isExist)
+        return localStorage.setItem(STORAGE_KEY, JSON.stringify({
+            tasks: [...item.tasks.map(taskItem => taskItem.id === task.id ? task: taskItem)]}))
+        
+    return localStorage.setItem(STORAGE_KEY, JSON.stringify({tasks: [...item.tasks, task]}))
 }
 
 export function deleteItemLocalStorage(itemId) {
@@ -80,8 +78,6 @@ export function handleFormSubmittion (e) {
     const textarea = form.elements.task.value
     const itemId = form.elements.task.dataset.itemId
     const itemType = form.elements.task.dataset.itemType ?? TODO
-    const isAdded = !itemId ? true : false
-    const isModified = !isAdded 
     if(textarea) {
         const item = {
             title: textarea,
@@ -89,16 +85,23 @@ export function handleFormSubmittion (e) {
             type: itemType ?? TODO
         }
         updateState(item)
-        const {toDoCount, inProgressCount, doneCount} = updateCountState(item.id, isAdded, false, isModified)
-        kanbanState.toDoCount = toDoCount
-        kanbanState.inProgressCount = inProgressCount
-        kanbanState.doneCount = doneCount
-
-        console.log(kanbanState)
+        countTaskCategories()
         updateLocalStorage(item)
         addNewListItem(item.title, item.id)
     }
     closeModal()
+}
+
+export function countTaskCategories() {
+    const {items} = kanbanState
+    // const initialCount = {
+    //     toDoCount: 0,
+    //     inProgressCount: 0,
+    //     doneCount: 0
+    // }
+    // if(!items.length)
+    //     return initialCount
+    return items.reduce((acc, {type}) => ({...acc, [type]: (acc[type] ?? 0) + 1}), {[TODO]: 0, [PROG]: 0, [DONE]: 0})
 }
 
 export function addNewListItem(task = "", id = "") {
@@ -116,15 +119,17 @@ export function addNewListItem(task = "", id = "") {
     }
     cloneTemplate(listItemTemplate, todoList)
     const newSpan = todoList.querySelector("ul>li:last-child>span")
-    newSpan.closest("li").dataset.itemType = getItemType(todoList.classList.value.split(' '))
+    newSpan.closest("li").dataset.itemType = getItemType(todoList)
+    console.log(newSpan.closest("li").dataset.itemType, getItemType(todoList))
     newSpan.closest("li").id = id
     newSpan.textContent = task
 }
 
 
-export function getItemType(listItems = []) {
-    if(!listItems.length) return ""
-    return listItems.filter(cls => cls === TODO || cls === PROG || cls === DONE).join('')
+export function getItemType(nodeListItems, closestEle = "") {
+    if((Array.isArray(nodeListItems) && !nodeListItems.length) || !nodeListItems) return ""
+    const classes = closestEle ? nodeListItems?.closest(closestEle).classList.value.split(" ") : nodeListItems?.classList.value.split(" ") 
+    return classes.filter(cls => cls === TODO || cls === PROG || cls === DONE).join('')
 }
 
 export function clearListItems() {
@@ -135,6 +140,7 @@ export function clearListItems() {
         item.remove()
     }
     resetState()
+    countTaskCategories()
 }
 
 export function showToast(msg = "", msgType = "INFO") {
@@ -170,14 +176,10 @@ export function closeToast(ms = 0) {
 export function removeListItem(event, listItems = []) {
     if(!listItems || !listItems.length || !event) return
     const itemId = event.target.closest("li").id
-    const itemType = event.target.closest("li").dataset.itemType
+    // const itemType = event.target.closest("li").dataset.itemType
     listItems.forEach(item => item === event.target.closest("li")? item.remove() : item)
     deleteItemState(itemId)
-    const {toDoCount, inProgressCount, doneCount} = updateCountState(itemId, false, true, false)
-    kanbanState.toDoCount = toDoCount
-    kanbanState.inProgressCount = inProgressCount
-    kanbanState.doneCount = doneCount
-    console.log(itemType, kanbanState)
+    countTaskCategories()
     deleteItemLocalStorage(itemId)
 }
 
@@ -187,7 +189,10 @@ export function getInsertBeforeElement(list, axisY) {
     // then convert listItems from NodeList (HTMLElementNodeList) to normal array
     const listItems = [...list.querySelectorAll("section.main__task-col-sec>ul.task-col-sec__list>li.list__list-item.list-item:not(.dragging)")]
     return listItems.reduce((closest, item) => {
+        // return object of boundingClientRect() {height: , width: , top: ,left: , right: ,bottom: }
         const ItemSizes = item.getBoundingClientRect()
+        // calculate midpoint or center point of item
+        // then get closest element that above a midpoint of item (so use -Infinity | Number.NEGATIVE_INIFINTY)
         const offset = axisY - (ItemSizes.top + ItemSizes.height / 2)
         if(offset < 0 && offset > closest.offset) 
             return {
@@ -201,7 +206,6 @@ export function getInsertBeforeElement(list, axisY) {
     }).element
 }
 
-
 // handleDragStart => store data of dragged element
 export function handleDragStart(e) {
     // update state by item selected to drag that e.target.closest("li") points to it
@@ -211,6 +215,8 @@ export function handleDragStart(e) {
     e.dataTransfer.effectAllowed = "move"
     // store data of dragged element that matches <li> and type of data is plain text "text/plain"
     e.dataTransfer.setData("text/plain", draggedItem.id)
+    
+    // console.log(draggedItem, e.dataTransfer.getData("text/plain"), draggedItem.id, e.target, e.currentTarget)
     // add dragging class to all dragged items
     draggedItem.classList.add("dragging")
 }
@@ -218,8 +224,11 @@ export function handleDragStart(e) {
 // handleDragEnd => update state of draggedItem and remove visual feedback or dragging class
 export function handleDragEnd(e) {
     // update state by item selected to drag that e.target.closest("li") points to it
+    if(!draggedItem) return
     draggedItem = e.target.closest("li.list__list-item.list-item")
     draggedItem.classList.remove("dragging")
+    // remove drag-over within dragleave and dragend and drop 
+    removeAllDragOver()
     // update state of draggedItem to null
     draggedItem = null
 }
@@ -247,15 +256,16 @@ export function handleDragOver(e) {
 
 // handleDragEnter => add visual feedback drag-over class  (dragenter associated with list or section)
 export function handleDragEnter(e) {
-    // select list dragged from it that e.target.closest("section.main__task-col-sec") points to it
+    // select list dragged from it that e.target.closest("section.main__task-col-sec>ul.task-col-sec__list") points to it
     const list = e.target.closest("section.main__task-col-sec>ul.task-col-sec__list")
     list.classList.add("drag-over")
 }
 
 // handleDragLeave => remove visual feedback drag-over class (dragleave associated with list or section)
 export function handleDragLeave(e) {
-    // select list dragged from it that e.target.closest("section.main__task-col-sec") points to it
+    // select list dragged from it that e.target.closest("section.main__task-col-sec>ul.task-col-sec__list") points to it
     const list = e.target.closest("section.main__task-col-sec>ul.task-col-sec__list")
+    removeAllDragOver()
     list.classList.remove("drag-over")
 }
 
@@ -263,18 +273,55 @@ export function handleDragLeave(e) {
 export function handleDrop(e) {
     // prevent default browser behavior
     e.preventDefault()
+    if(!draggedItem) return
     // catch list of current draggedItem
     const list = e.target.closest("section.main__task-col-sec>ul.task-col-sec__list")
+    removeAllDragOver()
+    list.classList.remove("drag-over")
+
     // retrieve item ID that transfer by drap and drop html api by dataTransfer.getData(dataType) "text/plain"
     const itemId = e.dataTransfer.getData("text/plain")
     // if only drag and drop elements between containers so i do not need function getInsertBeforeElment
     // and in this append item by document.getElementById(itemId)
-    const item = document.getElementById(itemId)
+    // const item = document.getElementById(itemId) 
+    // if(!draggedItem?.id) return
+    const item = document.getElementById(draggedItem.id) 
 
-    // const {storage: tasks, toDoCount, inProgressCount, doneCount} = restoreLocalStorage()
-    // const itemType =
+    if(!item) return
 
+    const itemType = getItemType(document.getElementById(draggedItem.id),"ul")
+    
+    console.log(itemType)
+    // console.log(document.getElementById(draggedItem.id), document.getElementById(draggedItem.id).parentElement, document.getElementById(draggedItem.id).closest("ul"))
+    
+    item.dataset.itemType = itemType
 
+    // console.log(document.getElementById(draggedItem.id).parentElement .classList.value.split(" "), item.classList.value.split(" "), item.dataset.itemType)
+
+    const updateItem = {
+        title: item.querySelector("span").textContent || "",
+        id: itemId === ""? draggedItem.id : itemId,
+        itemType 
+    }
+
+    // console.log(kanbanState, countTaskCategories().toDoCount, countTaskCategories().inProgressCount, countTaskCategories().doneCount)
+
+    console.log(kanbanState)
+    logState("before update item => deep clone");
+    updateState(updateItem) 
+    console.log(kanbanState)
+    logState("after update item => deep clone");
+    const {[TODO]: toDoCount, [PROG]: inProgressCount, [DONE]: doneCount} = countTaskCategories()
+    console.log(kanbanState, toDoCount, inProgressCount, doneCount)
+    logState("after update count => deep clone");
+    updateLocalStorage(updateItem)
+
+    // console.log(itemType, draggedItem.id, updateItem.itemType, updateItem.id, updateItem.title)
     // then append item to selected or target list  by list.appendChild(item) that already proccessed inside dragover event 
-    console.log(list, item)
+}
+
+function removeAllDragOver() {
+    const allListItems = [...allLists]
+    for(const list of allListItems)
+        list.classList.remove("drag-over")
 }

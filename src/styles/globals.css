@@ -91,7 +91,7 @@
   position: relative;
   transition:
     background-color 0.4s ease,
-    border 0.4s ease;
+    border-color 0.4s ease;
 }
 
 .task-col-sec:has(ul.drag-over) {
@@ -152,7 +152,12 @@
   max-width: 100%;
   cursor: grab;
   transition: opacity 0.4s ease;
+  /* pointer-events: none; */
 }
+
+/* .list__list-item:not(.dragging) {
+  
+} */
 
 .list__list-item.dragging {
   opacity: 0.4;
@@ -219,7 +224,7 @@
   align-items: center;
   gap: var(--space-xs);
   position: absolute;
-  top: 6%;
+  top: 16px;
   right: 5%;
 }
 

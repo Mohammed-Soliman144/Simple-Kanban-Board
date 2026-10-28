@@ -43,7 +43,8 @@ main.addEventListener("click", (e) => {
     } else if(isUpdateBtnClicked || isUpdateIconClicked) {
         const itemText = e.target.closest("li").querySelector("span").textContent || ""
         const itemId = e.target.closest("li").id || ""
-        const itemType = getItemType(e.target.closest("ul").classList.value.split(" "))
+        const itemType = getItemType(e.target, "ul")
+        console.log(itemType)
         cloneTemplate(addTemplate, main)
         openModal(true, itemText, itemId, itemType)
         main.querySelector("dialog.add-template__modal>form.modal__add-form>div.add-form__controls>button.add-form__button.btn-save").textContent = "edit"
