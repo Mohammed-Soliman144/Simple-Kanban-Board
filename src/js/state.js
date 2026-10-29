@@ -1,14 +1,14 @@
-/** kanban state
- *  {
- *      items: [{id:  ,title:  ,type: }]
- *  } 
+/** KANBAN STATE
+ *  { items: [{id:  ,title:  ,type: }]} 
  */
+// CONSTANT STATES (ITEM_TYPE)
 export const TODO = "to-do-list", PROG = "in-progress-list", DONE = "done-list"
 
+// KANBAN STATE
 export let kanbanState = {
     items: [],
 }
-
+// DELETE ITEM
 export function deleteItemState(itemId = "") {
     if(!itemId) return
     kanbanState = {
@@ -16,7 +16,7 @@ export function deleteItemState(itemId = "") {
         items: [...kanbanState.items.filter(item => item.id !== itemId)]
     }
 }
-
+// UPDATE AND EDIT ITEM
 export function updateState(item = {}) {
     if(!Object.keys(item).length) return
     const {items} = kanbanState
@@ -36,12 +36,11 @@ export function updateState(item = {}) {
         items: [...kanbanState.items, item]
     }
 }
-
+// RESET KANBAN STATE
 export function resetState() {
     Object.assign(kanbanState, { items: []})
 }
-
-
+// TRACING STATE AFTER CRUD OPERATIONS
 export function logState(operation = "") {
     console.log(`----------- ${operation} --------`);
     const deepClonedState = structuredClone(kanbanState)

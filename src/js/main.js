@@ -1,12 +1,14 @@
 import { addBtn, clearBtn, addTemplate, main, allLists } from "./selectors.js";
-import { cloneTemplate, openModal, handleFormSubmittion, clearListItems, removeListItem, showToast, closeToast, closeModal, handleDragStart, handleDragEnd, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, getItemType } from "./utils.js";
+import { cloneTemplate, openModal, handleFormSubmittion, clearListItems, removeListItem, showToast, closeToast, closeModal, handleDragStart, handleDragEnd, handleDragEnter, handleDragLeave, handleDragOver, handleDrop, getItemType, initializeApp } from "./utils.js";
 
+// OPEN DIALOG
 addBtn?.addEventListener("click", () => {
     cloneTemplate(addTemplate, main)
     openModal()
 })
 
 // native click eventName is bubble up by default
+// HANDLE ALL EVENTS (CRUD OPERATIONS)
 main.addEventListener("click", (e) => {
     const isSaveBtnClicked = e.target.matches("dialog.add-template__modal>form.modal__add-form>div.add-form__controls>button.add-form__button.btn-save")
     const isCancelBtnClicked = e.target.matches("dialog.add-template__modal>form.modal__add-form>div.add-form__controls>button.add-form__button.btn-cancel")
@@ -23,6 +25,8 @@ main.addEventListener("click", (e) => {
 
     if(isSaveBtnClicked && saveBtnLabel.textContent.trim() === "edit") {
         handleFormSubmittion(e)
+        showToast("Updated item successfully!", "INFO")
+        closeToast(1500)
     } else if(isSaveBtnClicked && saveBtnLabel.textContent.trim() === "save") {
         const textarea = main.querySelector("dialog.add-template__modal>form.modal__add-form textarea")
         if(!textarea.value) {
@@ -37,9 +41,10 @@ main.addEventListener("click", (e) => {
         textarea.value = ""
         closeModal()
     }
-    // DONE
     else if (isDeleteBtnClicked || isDeleteIconClicked) {
         removeListItem(e, alllistItems)
+        showToast("Delete item successfully!", "INFO")
+        closeToast(1500)
     } else if(isUpdateBtnClicked || isUpdateIconClicked) {
         const itemText = e.target.closest("li").querySelector("span").textContent || ""
         const itemId = e.target.closest("li").id || ""
@@ -62,7 +67,7 @@ main.addEventListener("close", (e) => {
         closeModal()
     }
 }, {capture: true})
-
+// DELETE ALL ITEMS FROM DOM
 clearBtn.addEventListener("click", clearListItems)
 
 
@@ -101,3 +106,6 @@ for(const list of allLists){
     list.addEventListener("dragover", handleDragOver)
     list.addEventListener("drop", handleDrop)
 }
+
+// INITIALIZE APP BY KANBAN STATE
+document.addEventListener("DOMContentLoaded", initializeApp)

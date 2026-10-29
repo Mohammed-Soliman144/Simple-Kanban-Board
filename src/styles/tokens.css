@@ -63,6 +63,7 @@
   --padding-bs: 2rem;
   --padding-lg: 2.5rem;
   --padding-xl: 3.5rem;
+  --padding-sp: 0.25rem; 
 
   /* Radius */
   --radius-capsule: 99999px;

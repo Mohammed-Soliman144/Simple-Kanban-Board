@@ -111,6 +111,20 @@
   font-weight: var(--font-black);
   letter-spacing: -1.125px;
   align-self: flex-start;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-lg);
+}
+
+.task-col-sec__heading__badge {
+  display: inline-block;
+  padding: var(--padding-sp) var(--padding-xs);
+  font-size: clamp(var(--font-sm), var(--font-base), var(--font-md));
+  font-weight: var(--font-semi-bold);
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border-radius: var(--radius-sm);
 }
 
 @media (min-width: 64rem) {
@@ -224,7 +238,7 @@
   align-items: center;
   gap: var(--space-xs);
   position: absolute;
-  top: 16px;
+  top: 18px;
   right: 5%;
 }
 

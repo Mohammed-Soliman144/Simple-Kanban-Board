@@ -1,17 +1,18 @@
-import { msgTemplate, main, listItemTemplate, todoList, todolistItems, proglistItems, donelistItems, allLists } from "./selectors.js";
-import { kanbanState, TODO, PROG, DONE, updateState, deleteItemState, resetState, logState } from "./state.js";
+import { msgTemplate, main, listItemTemplate, todoList, progList, doneList, allBadges } from "./selectors.js";
+import { kanbanState, TODO, PROG, DONE, updateState, deleteItemState, resetState } from "./state.js";
 
 // state to track dragged element with drag and drop operations within events lifecycle
 export let draggedItem = null
 const STORAGE_KEY = "Task-App";
 
+// RESTORE DATA FROM LOCALSTORAGE
 export function restoreLocalStorage() {
     if(typeof window === "undefined") return {}
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY))
-    if(!data.tasks.length) return {}
+    if(!data) return
     return data
 }
-
+// UPDATE AND EDIT DATA TO LOCALSTORAGE
 export function updateLocalStorage(task = {}) {
     if(!Object.keys(task).length) return
     if(typeof window === "undefined") return
@@ -29,7 +30,7 @@ export function updateLocalStorage(task = {}) {
         
     return localStorage.setItem(STORAGE_KEY, JSON.stringify({tasks: [...item.tasks, task]}))
 }
-
+// DELETE DATA FROM LOCALSTORAGE
 export function deleteItemLocalStorage(itemId) {
     if(typeof window === "undefined" || !itemId) return
     const item = JSON.parse(localStorage.getItem(STORAGE_KEY))
@@ -38,7 +39,7 @@ export function deleteItemLocalStorage(itemId) {
     const newItems = tasks.filter(task => task.id !== itemId? task : null)
     localStorage.setItem(STORAGE_KEY, JSON.stringify({...item, tasks: newItems}))
 }
-
+// SHOW DIALOG AND UPDATE KANBAN STATE
 export function openModal(isEditable = false, itemText = "", id = "", type = "") {
     const modal = document.querySelector("dialog.add-template__modal")
     if(!modal) return
@@ -56,21 +57,21 @@ export function openModal(isEditable = false, itemText = "", id = "", type = "")
         updateState(item)
     }
 }
-
+// CLONE CONTENT OF TEMPLATE ELEMENT AND APPEND TO ROOT
 export function cloneTemplate(template, root) {
     if(!template || !root) return
     const cloneTemp = template.content.cloneNode(true)
     root.appendChild(cloneTemp)
     return cloneTemp
 }
-
+// CLOSE DIALOG
 export function closeModal() {
     const modal = document.querySelector("dialog.add-template__modal")
     if(!modal) return
     modal.close()
     modal.remove()
 }
-
+// HANDLE FORM SUBMITION ADD AND UPDATE DATA
 export function handleFormSubmittion (e) {
     // to prevent browser from default behavior when submit form
     e.preventDefault()
@@ -85,26 +86,19 @@ export function handleFormSubmittion (e) {
             type: itemType ?? TODO
         }
         updateState(item)
-        countTaskCategories()
+        updateBadges(countTaskCategories()) 
         updateLocalStorage(item)
         addNewListItem(item.title, item.id)
     }
     closeModal()
 }
-
+// COUNT ITEM TYPES [TODO, PROG, DONE] (DERIVED STATES)
 export function countTaskCategories() {
     const {items} = kanbanState
-    // const initialCount = {
-    //     toDoCount: 0,
-    //     inProgressCount: 0,
-    //     doneCount: 0
-    // }
-    // if(!items.length)
-    //     return initialCount
     return items.reduce((acc, {type}) => ({...acc, [type]: (acc[type] ?? 0) + 1}), {[TODO]: 0, [PROG]: 0, [DONE]: 0})
 }
-
-export function addNewListItem(task = "", id = "") {
+// UPDATE AND EDIT NEW ITEM TO DOM
+export function addNewListItem(task = "", id = "", type = "") {
     if(!task || !id) return
     const allListItems = main.querySelectorAll("section.main__task-col-sec>ul.task-col-sec__list>li")
     const isExist = [...allListItems].find(item => item.id === id)
@@ -117,21 +111,40 @@ export function addNewListItem(task = "", id = "") {
         })
         return
     }
-    cloneTemplate(listItemTemplate, todoList)
-    const newSpan = todoList.querySelector("ul>li:last-child>span")
-    newSpan.closest("li").dataset.itemType = getItemType(todoList)
-    console.log(newSpan.closest("li").dataset.itemType, getItemType(todoList))
-    newSpan.closest("li").id = id
-    newSpan.textContent = task
+    switch(type) {
+        case PROG:
+            {
+                cloneTemplate(listItemTemplate, progList)
+                const newSpan = progList.querySelector("ul>li:last-child>span")
+                newSpan.closest("li").dataset.itemType = type
+                newSpan.closest("li").id = id
+                newSpan.textContent = task
+            }
+        break;
+        case DONE:
+            {
+                cloneTemplate(listItemTemplate, doneList)
+                const newSpan = doneList.querySelector("ul>li:last-child>span")
+                newSpan.closest("li").dataset.itemType = type
+                newSpan.closest("li").id = id
+                newSpan.textContent = task
+            }
+            break;
+        default:
+            cloneTemplate(listItemTemplate, todoList)
+            const newSpan = todoList.querySelector("ul>li:last-child>span")
+            newSpan.closest("li").dataset.itemType = type ?? TODO
+            newSpan.closest("li").id = id
+            newSpan.textContent = task
+    }
 }
-
-
+// GET ITEM_TYPE BASED ON CLASS
 export function getItemType(nodeListItems, closestEle = "") {
     if((Array.isArray(nodeListItems) && !nodeListItems.length) || !nodeListItems) return ""
     const classes = closestEle ? nodeListItems?.closest(closestEle).classList.value.split(" ") : nodeListItems?.classList.value.split(" ") 
     return classes.filter(cls => cls === TODO || cls === PROG || cls === DONE).join('')
 }
-
+// RESET KANBAN STATE AND CLEAR ITEMS FROM DOM
 export function clearListItems() {
     const allListItems = document.querySelectorAll("section.main__task-col-sec>ul.task-col-sec__list>li")
     if(!allListItems.length) return
@@ -140,12 +153,11 @@ export function clearListItems() {
         item.remove()
     }
     resetState()
-    countTaskCategories()
+    updateBadges(countTaskCategories())
 }
-
+// OPEN TOAST NOTIFICATION (CRUD OPERATION)
 export function showToast(msg = "", msgType = "INFO") {
     if(!msg) return
-    console.log("message exist")
     cloneTemplate(msgTemplate, main)
     const toastTitle = main.querySelector("div.msg-template__toast>div.toast__container>p.toast__title")
     toastTitle.textContent = msg
@@ -160,7 +172,7 @@ export function showToast(msg = "", msgType = "INFO") {
     toastTitle.closest("div.msg-template__toast>div.toast__container").classList.remove("closed")
     toastTitle.closest("div.msg-template__toast>div.toast__container").classList.add("opened")
 }
-
+// CLOSE TOAST NOTIFICATION
 export function closeToast(ms = 0) {
     const toast = document.querySelector("div.msg-template__toast")
     if(!toast) return
@@ -172,18 +184,18 @@ export function closeToast(ms = 0) {
     }
     toast.remove()
 }
-
+// DELETE ITEM FROM STORAGE, KANBAN AND DOM
 export function removeListItem(event, listItems = []) {
     if(!listItems || !listItems.length || !event) return
     const itemId = event.target.closest("li").id
     // const itemType = event.target.closest("li").dataset.itemType
     listItems.forEach(item => item === event.target.closest("li")? item.remove() : item)
     deleteItemState(itemId)
-    countTaskCategories()
+    updateBadges(countTaskCategories()) 
     deleteItemLocalStorage(itemId)
 }
 
-// define nextElement that should be sit immediately after draggedElement
+// RETRIEVE NEXT_ELEMENT SHOULD SIT IMMEDIATELY AFTER DRAGGED ELEMENT
 export function getInsertBeforeElement(list, axisY) {
     // catch all elements or items that not has dragging class to define element after draggedItem or draggedElement within current list (container element)
     // then convert listItems from NodeList (HTMLElementNodeList) to normal array
@@ -206,7 +218,7 @@ export function getInsertBeforeElement(list, axisY) {
     }).element
 }
 
-// handleDragStart => store data of dragged element
+// HANDLE DRAG START => SET DATA OF ITEM DRAGGED BY HTML DRAG AND DROP API
 export function handleDragStart(e) {
     // update state by item selected to drag that e.target.closest("li") points to it
     draggedItem = e.target.closest("li.list__list-item.list-item")
@@ -215,25 +227,21 @@ export function handleDragStart(e) {
     e.dataTransfer.effectAllowed = "move"
     // store data of dragged element that matches <li> and type of data is plain text "text/plain"
     e.dataTransfer.setData("text/plain", draggedItem.id)
-    
-    // console.log(draggedItem, e.dataTransfer.getData("text/plain"), draggedItem.id, e.target, e.currentTarget)
     // add dragging class to all dragged items
     draggedItem.classList.add("dragging")
 }
 
-// handleDragEnd => update state of draggedItem and remove visual feedback or dragging class
+// HANDLE DRAG END => update state of draggedItem and remove visual feedback or dragging class
 export function handleDragEnd(e) {
     // update state by item selected to drag that e.target.closest("li") points to it
     if(!draggedItem) return
     draggedItem = e.target.closest("li.list__list-item.list-item")
     draggedItem.classList.remove("dragging")
-    // remove drag-over within dragleave and dragend and drop 
-    removeAllDragOver()
     // update state of draggedItem to null
     draggedItem = null
 }
 
-// handleDragOver => prevent default browser behavior which is automated prevent dragged item over another item (item/element) (dragover associated with list or section)
+// HANDLE DRAG OVER => prevent default browser behavior which is automated prevent dragged item over another item (item/element) (dragover associated with list or section)
 export function handleDragOver(e) {
     // prevent default browser behavior
     e.preventDefault()
@@ -254,29 +262,27 @@ export function handleDragOver(e) {
         list.insertBefore(draggedItem, nextElement)
 }
 
-// handleDragEnter => add visual feedback drag-over class  (dragenter associated with list or section)
+// HANDLE DRAG ENTER => add visual feedback drag-over class  (dragenter associated with list or section)
 export function handleDragEnter(e) {
     // select list dragged from it that e.target.closest("section.main__task-col-sec>ul.task-col-sec__list") points to it
     const list = e.target.closest("section.main__task-col-sec>ul.task-col-sec__list")
     list.classList.add("drag-over")
 }
 
-// handleDragLeave => remove visual feedback drag-over class (dragleave associated with list or section)
+// HANDLE DRAG LEAVE => remove visual feedback drag-over class (dragleave associated with list or section)
 export function handleDragLeave(e) {
     // select list dragged from it that e.target.closest("section.main__task-col-sec>ul.task-col-sec__list") points to it
     const list = e.target.closest("section.main__task-col-sec>ul.task-col-sec__list")
-    removeAllDragOver()
     list.classList.remove("drag-over")
 }
 
-// handleDrop => reset drag and drop operations and prevent default browser behavior (dragleave associated with list or section) and retrieve or restore itemDragged by using dataTransfer.getData
+// HANDLE DROP => reset drag and drop operations and prevent default browser behavior (dragleave associated with list or section) and retrieve or restore itemDragged by using dataTransfer.getData
 export function handleDrop(e) {
     // prevent default browser behavior
     e.preventDefault()
     if(!draggedItem) return
     // catch list of current draggedItem
     const list = e.target.closest("section.main__task-col-sec>ul.task-col-sec__list")
-    removeAllDragOver()
     list.classList.remove("drag-over")
 
     // retrieve item ID that transfer by drap and drop html api by dataTransfer.getData(dataType) "text/plain"
@@ -291,37 +297,40 @@ export function handleDrop(e) {
 
     const itemType = getItemType(document.getElementById(draggedItem.id),"ul")
     
-    console.log(itemType)
     // console.log(document.getElementById(draggedItem.id), document.getElementById(draggedItem.id).parentElement, document.getElementById(draggedItem.id).closest("ul"))
     
     item.dataset.itemType = itemType
 
     // console.log(document.getElementById(draggedItem.id).parentElement .classList.value.split(" "), item.classList.value.split(" "), item.dataset.itemType)
-
     const updateItem = {
         title: item.querySelector("span").textContent || "",
         id: itemId === ""? draggedItem.id : itemId,
-        itemType 
+        type: itemType 
     }
 
     // console.log(kanbanState, countTaskCategories().toDoCount, countTaskCategories().inProgressCount, countTaskCategories().doneCount)
-
-    console.log(kanbanState)
-    logState("before update item => deep clone");
     updateState(updateItem) 
-    console.log(kanbanState)
-    logState("after update item => deep clone");
-    const {[TODO]: toDoCount, [PROG]: inProgressCount, [DONE]: doneCount} = countTaskCategories()
-    console.log(kanbanState, toDoCount, inProgressCount, doneCount)
-    logState("after update count => deep clone");
+    updateBadges(countTaskCategories())
     updateLocalStorage(updateItem)
 
     // console.log(itemType, draggedItem.id, updateItem.itemType, updateItem.id, updateItem.title)
     // then append item to selected or target list  by list.appendChild(item) that already proccessed inside dragover event 
 }
-
-function removeAllDragOver() {
-    const allListItems = [...allLists]
-    for(const list of allListItems)
-        list.classList.remove("drag-over")
+// INITIALIZE APP BY KANBAN STATE
+export function initializeApp() {
+    const storage = restoreLocalStorage()
+    if(!storage) return
+    const {tasks} = storage
+    for(const task of tasks)
+        updateState(task)
+    const {items} = kanbanState
+    // console.log(items, kanbanState)
+    items.map(({title, type, id}) => addNewListItem(title, id, type))
+    updateBadges(countTaskCategories())    
+}
+// UPDATE DOM BY COUNT OF ITEM_TYPES
+export function updateBadges(count = {}) {
+    const {[TODO]: todoCount, [PROG]: progCount, [DONE]: doneCount} = count
+    for(const badge of allBadges)
+        badge.textContent = getItemType(badge.parentElement.nextElementSibling) === TODO? todoCount : getItemType(badge.parentElement.nextElementSibling) === PROG? progCount : doneCount
 }
