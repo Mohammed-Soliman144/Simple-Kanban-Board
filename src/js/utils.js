@@ -341,7 +341,6 @@ export function updateBadges(count = {}) {
         }
         return
     }
-    
     for(const badge of allBadges) {
         if(!badge.classList.contains("active") || badge.classList.contains("in-active")) {
             badge.classList.remove("in-active")
