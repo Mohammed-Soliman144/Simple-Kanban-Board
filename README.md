@@ -12,6 +12,7 @@ The project focuses on practicing core frontend development concepts, including 
 - **Task Counters:** Dynamically display and update the number of tasks.
 - **Drag and Drop:** Move tasks between workflow columns using the native HTML Drag and Drop API.
 - **Task Organization:** Manage tasks across different workflow stages.
+- **Notifications Toast:** appears animated toast within all CRUD operations.
 
 ## Tech Stack
 
@@ -83,7 +84,6 @@ Simple-Kanban-Board/
 
 **Mohammed Soliman**
 
+- Live Demo: [@Mohammed-Soliman144](https://Mohammed-Soliman144.github.io/Simple-Kanban-Board)
 - GitHub: [@Mohammed-Soliman144](https://github.com/Mohammed-Soliman144)
 - LinkedIn: [Muhammad Soliman](https://www.linkedin.com/in/muhammad-soliman144/)
-
----

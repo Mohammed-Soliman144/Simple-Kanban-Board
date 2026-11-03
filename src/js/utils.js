@@ -319,7 +319,10 @@ export function handleDrop(e) {
 // INITIALIZE APP BY KANBAN STATE
 export function initializeApp() {
     const storage = restoreLocalStorage()
-    if(!storage) return
+    if(!storage) {
+        updateBadges(countTaskCategories())
+        return
+    }
     const {tasks} = storage
     for(const task of tasks)
         updateState(task)
@@ -331,6 +334,20 @@ export function initializeApp() {
 // UPDATE DOM BY COUNT OF ITEM_TYPES
 export function updateBadges(count = {}) {
     const {[TODO]: todoCount, [PROG]: progCount, [DONE]: doneCount} = count
-    for(const badge of allBadges)
+    if(!todoCount && !progCount && !doneCount) {
+        for(const badge of allBadges) {
+            badge.classList.remove("active")
+            badge.classList.add("in-active")
+        }
+        return
+    }
+    
+    for(const badge of allBadges) {
+        if(!badge.classList.contains("active") || badge.classList.contains("in-active")) {
+            badge.classList.remove("in-active")
+            badge.classList.add("active")
+        }
         badge.textContent = getItemType(badge.parentElement.nextElementSibling) === TODO? todoCount : getItemType(badge.parentElement.nextElementSibling) === PROG? progCount : doneCount
+    }
+        
 }

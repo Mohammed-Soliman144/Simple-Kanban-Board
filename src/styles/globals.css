@@ -127,6 +127,13 @@
   border-radius: var(--radius-sm);
 }
 
+.task-col-sec__heading__badge.in-active {
+  visibility: hidden;
+}
+.task-col-sec__heading__badge.active {
+  visibility: visible;
+}
+
 @media (min-width: 64rem) {
   .task-col-sec__heading {
     font-size: var(--font-xl);
